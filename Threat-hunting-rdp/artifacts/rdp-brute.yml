@@ -1,0 +1,25 @@
+title: Multiple Failed RDP Logins from Same IP
+id: 8e1c0c92-7abc-4cf1-a5d4-8e4d2a3e3f7e
+status: experimental
+description: Detects brute-force attempts via RDP by identifying multiple failed login attempts (Event ID 4625) from the same IP address in a short time period.
+
+logsource:
+  product: windows
+  service: security
+
+detection:
+  selection:
+    EventID: 4625
+    LogonType: 10         # Indicates RDP login attempt
+  timeframe: 5m
+  condition: selection | count(IpAddress) > 5
+
+fields:
+  - IpAddress
+  - TargetUserName
+  - WorkstationName
+
+level: medium
+tags:
+  - attack.t1110         # MITRE: Brute Force
+  - attack.t1021.001     # MITRE: Remote Services - RDP
