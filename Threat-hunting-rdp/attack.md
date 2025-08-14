@@ -1,34 +1,34 @@
-🔴 Red Team – RDP Brute Force Simulation
+# 🔴 Red Team – RDP Brute Force Simulation
 
- 📜 Overview
+## 📜 Overview
 This section documents the simulated RDP brute force attack performed against a Windows 10 VM.  
 The goal was to generate realistic Event ID 4625 (failed logon) entries for blue team detection and Sigma rule validation.
 
 ---
 
- 🖥️ Lab Environment
-Attacker machine: Kali Linux (via WSL on Windows host)  
-Target machine: Windows 10 Pro VM  
-Network: Local VM NAT network (ensuring isolated lab traffic)  
-Service Enabled: Remote Desktop Protocol (RDP)  
+## 🖥️ Lab Environment
+**Attacker machine:** WSL (Ubuntu) on Windows host  
+**Target machine:** Windows 10 Pro VM  
+**Network:** Local VM NAT network (isolated lab traffic)  
+**Service Enabled:** Remote Desktop Protocol (RDP)  
 
 ---
 
- 🛠️ Tools & Wordlists
-- Hydra – High-speed network login cracker  
-- Username list (`user.txt`) – Custom file containing common admin accounts (e.g., Administrator, Admin, Test)  
-- Password list – `/usr/share/wordlists/rockyou.txt` (default in Kali)  
+## 🛠️ Tools & Wordlists
+- **Hydra** – High-speed network login cracker  
+- **Username list (`users.txt`)** – Custom file containing common admin accounts (e.g., Administrator, Admin, Test)  
+- **Password list** – `/usr/share/wordlists/rockyou.txt` (default in Kali/WSL)  
 
 ---
 
- ⚡ Attack Command
-Executed from WSL terminal:
+## ⚡ Attack Command
+Executed from **WSL terminal**:
 
 ```bash
-hydra -L user.txt -P /usr/share/wordlists/rockyou.txt -t1 rdp://192.168.1.73
+hydra -L users.txt -P /usr/share/wordlists/rockyou.txt -t1 rdp://192.168.1.73
 ````
 
-Flags Explained:
+**Flags Explained:**
 
 * `-L users.txt` → list of usernames to try
 * `-P rockyou.txt` → list of passwords to try
@@ -37,18 +37,18 @@ Flags Explained:
 
 ---
 
- 📂 Expected Log Artifacts
+## 📂 Expected Log Artifacts
 
-On the target (Windows 10 VM):
+**On the target (Windows 10 VM):**
 
-* Event ID 4625 → Failed logon
-* Logon Type 10 → RemoteInteractive (RDP)
-* Source IP field → Hydra attacker's IP (seen in Event Viewer)
-* Possible Sysmon logs for network connections (if Sysmon installed)
+* **Event ID 4625** → Failed logon
+* **Logon Type 10** → RemoteInteractive (RDP)
+* **Source IP** field → Hydra attacker's IP (seen in Event Viewer)
+* Sysmon logs for network connections (if Sysmon installed)
 
 ---
 
- 📸 Screenshots
+## 📸 Screenshots
 
  Hydra in Action
 
@@ -60,7 +60,7 @@ On the target (Windows 10 VM):
 
 ---
 
- 🧹 Cleanup
+## 🧹 Cleanup
 
 * Stopped Hydra with `CTRL+C`
 * Verified that no accounts were locked out
@@ -68,10 +68,10 @@ On the target (Windows 10 VM):
 
 ---
 
- 🧠 Lessons Learned
+## 🧠 Lessons Learned
 
 * Using `-t1` avoids generating excessive noise that can disrupt RDP entirely during a lab test.
 * Event ID 4625 with Logon Type 10 is a clear indicator of remote login attempts — perfect for mapping into a Sigma rule.
-* WSL allowed use of Linux-native tools without spinning up a separate Kali VM, but care must be taken with file paths and Git integration.
+* WSL allowed use of Linux-native tools without spinning up a separate Kali VM, but file paths and repo management must be planned in advance.
 
 ```
