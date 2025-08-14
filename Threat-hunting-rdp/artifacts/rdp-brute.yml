@@ -1,25 +1,43 @@
-title: Multiple Failed RDP Logins from Same IP
-id: 8e1c0c92-7abc-4cf1-a5d4-8e4d2a3e3f7e
+# Title of the rule for easy identification
+title: Possible RDP Brute Force - Multiple 4625 From Single IP
+
+# Unique ID for the rule (can follow your org's naming convention)
+id: rdp-bruteforce-agg-roninsec-v1
+
+# Rule maturity level: experimental, stable, or deprecated
 status: experimental
-description: Detects brute-force attempts via RDP by identifying multiple failed login attempts (Event ID 4625) from the same IP address in a short time period.
 
+# Description of what the rule detects and how
+description: Flags potential RDP brute force based on repeated failed logons (Event ID 4625) from the same source IP within a short timeframe.
+
+# Specifies the source of logs this rule applies to
 logsource:
-  product: windows
-  service: security
+  product: windows         # Operating system
+  service: security        # Windows Security Event Log
 
+# Detection logic block
 detection:
   selection:
-    EventID: 4625
-    LogonType: 10         # Indicates RDP login attempt
-  timeframe: 5m
-  condition: selection | count(IpAddress) > 5
+    EventID: 4625          # Failed logon attempt
+    LogonType: 10          # RemoteInteractive (RDP session)
+  timeframe: 10m           # Time window to aggregate events (10 minutes)
+  condition: count(selection) by IpAddress >= 5  # Trigger if 5+ failed logons from same IP in timeframe
 
+# Fields to include in the output for context and investigation
 fields:
-  - IpAddress
-  - TargetUserName
-  - WorkstationName
+  - IpAddress              # Source IP of the logon attempt
+  - TargetUserName         # Username that was targeted
+  - WorkstationName        # Hostname of the machine being accessed
 
-level: medium
+# Known scenarios that could cause false positives
+falsepositives:
+  - User mistyping password repeatedly     # Common user behavior
+  - Account lockout testing                # Admin or security testing
+
+# Severity level of the alert
+level: high
+
+# MITRE ATT&CK technique tags for mapping detection to adversary behavior
 tags:
-  - attack.t1110         # MITRE: Brute Force
-  - attack.t1021.001     # MITRE: Remote Services - RDP
+  - attack.t1110           # Brute Force
+  - attack.t1021.001       # Remote Services: Remote Desktop Protocol
