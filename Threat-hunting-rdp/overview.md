@@ -1,11 +1,11 @@
 # RDP Brute Force Detection Lab
 
- 🎯 Objective
+## 🎯 Objective
 Simulate an RDP brute-force attack against a Windows 10 system and develop detection logic using Sysmon, Event Viewer, and a Sigma rule for SIEM integration.
 
 ---
 
- 💻 Environment
+## 💻 Environment
 - **Windows 10 VM** (RDP enabled, Sysmon installed with SwiftOnSecurity config)
 - **WSL (Ubuntu)** running Hydra for brute-force simulation
 - **Event Viewer** for manual log analysis
@@ -13,13 +13,13 @@ Simulate an RDP brute-force attack against a Windows 10 system and develop detec
 
 ---
 
- 🔍 MITRE ATT&CK Mapping
+## 🔍 MITRE ATT&CK Mapping
 - **T1110**: Brute Force  
 - **T1021.001**: Remote Services (RDP)  
 
 ---
 
- 🛠️ Outcome
+## 🛠️ Outcome
 - Full attack execution documented (Hydra → RDP target)
 - Detection methods explained:
   - Manual detection in Event Viewer
