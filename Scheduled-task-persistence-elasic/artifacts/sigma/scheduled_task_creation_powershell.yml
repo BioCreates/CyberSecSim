@@ -1,0 +1,31 @@
+title: Scheduled Task Creation via PowerShell
+id: 2d1b9a1b-2f7a-4a2a-9aa1-rt-powershell-st-v1
+status: experimental
+description: Detects creation of scheduled tasks via PowerShell cmdlets such as Register-ScheduledTask or New-ScheduledTaskAction.
+author: RoninSec
+date: 2025/08/24
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  sel_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  sel_args:
+    CommandLine|contains:
+      - 'Register-ScheduledTask'
+      - 'New-ScheduledTaskAction'
+      - 'New-ScheduledTaskTrigger'
+  condition: sel_img and sel_args
+fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+falsepositives:
+  - Admin scripts that legitimately register tasks
+level: medium
+tags:
+  - attack.persistence
+  - attack.t1053.005
