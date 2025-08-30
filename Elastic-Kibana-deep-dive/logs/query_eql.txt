@@ -1,0 +1,3 @@
+sequence by process.entity_id
+  [process where process.name == "schtasks.exe"]
+  [process where process.name == "taskeng.exe"]
